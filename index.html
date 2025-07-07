@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Progreso Académico</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide-react/0.263.1/umd/lucide-react.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { CheckCircle, Circle, Award, BookOpen, Calendar, Clock, Save, Sparkles, Star, GraduationCap, Download, Upload, AlertCircle } = lucide;
+
+        // AQUÍ VA EL CÓDIGO COMPLETO DEL COMPONENTE CALCULADORAPROGRESO
+        // (Copia todo el código JavaScript del componente desde el artifact anterior)
+        
+        const CalculadoraProgreso = () => {
+            const [materiasAprobadas, setMateriasAprobadas] = useState(new Set());
+  const [progreso, setProgreso] = useState(0);
+  const [guardadoAutomatico, setGuardadoAutomatico] = useState(false);
+  const [nombreArchivo, setNombreArchivo] = useState('progreso-academico.json');
+  const [estadoCarga, setEstadoCarga] = useState('cargando'); // 'cargando', 'exito', 'error'
+
+  const materias = [
+    {
+      id: 1,
+      nombre: "Introducción a la Biología Molecular y Celular",
+      correlativas: ["CBC"],
+      cuatrimestres: ["1", "2"],
+      cargaHoraria: 12,
+      nivel: "primer-año",
+      color: "from-blue-400 to-blue-600",
+      emoji: "🧬"
+    },
+    {
+      id: 2,
+      nombre: "Matemática I",
+      correlativas: ["CBC"],
+      cuatrimestres: ["Verano", "1", "2"],
+      cargaHoraria: 10,
+      nivel: "primer-año",
+      color: "from-purple-400 to-purple-600",
+      emoji: "📐"
+    },
+    {
+      id: 3,
+      nombre: "Introducción a la Botánica",
+      correlativas: ["CBC"],
+      cuatrimestres: ["1", "2"],
+      cargaHoraria: 12,
+      nivel: "primer-año",
+      color: "from-green-400 to-green-600",
+      emoji: "🌱"
+    },
+    {
+      id: 4,
+      nombre: "Química General e Inorgánica I",
+      correlativas: ["CBC"],
+      cuatrimestres: ["1", "2"],
+      cargaHoraria: 11,
+      nivel: "primer-año",
+      color: "from-orange-400 to-orange-600",
+      emoji: "⚗️"
+    },
+    {
+      id: 5,
+      nombre: "Introducción a la Zoología",
+      correlativas: ["Introducción a la Biología Molecular y Celular"],
+      cuatrimestres: ["1", "2"],
+      cargaHoraria: 12,
+      nivel: "segundo-año",
+      color: "from-red-400 to-red-600",
+      emoji: "🦋"
+    },
+    {
+      id: 6,
+      nombre: "Mecánica y Termodinámica",
+      correlativas: ["Matemática I"],
+      cuatrimestres: ["1", "2", "Verano"],
+      cargaHoraria: 10,
+      nivel: "segundo-año",
+      color: "from-indigo-400 to-indigo-600",
+      emoji: "⚙️"
+    },
+    {
+      id: 7,
+      nombre: "Biometría",
+      correlativas: ["Introducción a la Biología Molecular y Celular", "Matemática I", "Introducción a la Botánica o Introducción a la Zoología"],
+      cuatrimestres: ["1", "2"],
+      cargaHoraria: 12,
+      nivel: "segundo-año",
+      color: "from-pink-400 to-pink-600",
+      emoji: "📊"
+    },
+    {
+      id: 8,
+      nombre: "Química Orgánica",
+      correlativas: ["Química General e Inorgánica I"],
+      cuatrimestres: ["1", "2"],
+      cargaHoraria: 11,
+      nivel: "segundo-año",
+      color: "from-teal-400 to-teal-600",
+      emoji: "🧪"
+    },
+    {
+      id: 9,
+      nombre: "Química Biológica",
+      correlativas: ["Química Orgánica"],
+      cuatrimestres: ["1", "2"],
+      cargaHoraria: 11,
+      nivel: "tercer-año",
+      color: "from-cyan-400 to-cyan-600",
+      emoji: "🔬"
+    },
+    {
+      id: 10,
+      nombre: "Ecología General",
+      correlativas: ["Introducción a la Botánica", "Introducción a la Zoología", "Biometría"],
+      cuatrimestres: ["1", "2"],
+      cargaHoraria: 12,
+      nivel: "tercer-año",
+      color: "from-emerald-400 to-emerald-600",
+      emoji: "🌍"
+    },
+    {
+      id: 11,
+      nombre: "Genética",
+      correlativas: ["Introducción a la Botánica", "Introducción a la Zoología", "Biometría", "Química Biológica"],
+      cuatrimestres: ["1", "2"],
+      cargaHoraria: 12,
+      nivel: "tercer-año",
+      color: "from-violet-400 to-violet-600",
+      emoji: "🧬"
+    },
+    {
+      id: 12,
+      nombre: "Matemática II",
+      correlativas: ["Matemática I"],
+      cuatrimestres: ["1", "2"],
+      cargaHoraria: 10,
+      nivel: "tercer-año",
+      color: "from-amber-400 to-amber-600",
+      emoji: "🔢"
+    },
+    {
+      id: 13,
+      nombre: "Evolución",
+      correlativas: ["Genética"],
+      cuatrimestres: ["1", "2"],
+      cargaHoraria: 12,
+      nivel: "cuarto-año",
+      color: "from-rose-400 to-rose-600",
+      emoji: "🦕"
+    },
+    {
+      id: 14,
+      nombre: "Electromagnetismo y Óptica",
+      correlativas: ["Mecánica y Termodinámica"],
+      cuatrimestres: ["1", "2", "Verano"],
+      cargaHoraria: 10,
+      nivel: "cuarto-año",
+      color: "from-sky-400 to-sky-600",
+      emoji: "⚡"
+    }
+  ];
+
+  // Función para cargar el progreso desde archivo JSON del proyecto
+  const cargarProgresoDesdeArchivo = async () => {
+    try {
+      setEstadoCarga('cargando');
+      const response = await fetch('./progreso-academico.json');
+      if (response.ok) {
+        const datos = await response.json();
+        if (datos.materiasAprobadas && Array.isArray(datos.materiasAprobadas)) {
+          setMateriasAprobadas(new Set(datos.materiasAprobadas));
+          setEstadoCarga('exito');
+        } else {
+          setEstadoCarga('error');
+        }
+      } else {
+        // Si el archivo no existe, crear uno nuevo
+        await guardarProgresoEnArchivo(new Set());
+        setEstadoCarga('exito');
+      }
+    } catch (error) {
+      console.log('No se pudo cargar el archivo de progreso, iniciando con datos vacíos');
+      setEstadoCarga('error');
+    }
+  };
+
+  // Función para guardar el progreso en archivo JSON del proyecto
+  const guardarProgresoEnArchivo = async (materiasAprobadas) => {
+    const datos = {
+      materiasAprobadas: Array.from(materiasAprobadas),
+      fechaUltimaActualizacion: new Date().toISOString(),
+      progreso: (materiasAprobadas.size / materias.length) * 100,
+      totalMaterias: materias.length,
+      cargaHoraria: materias.reduce((total, materia) => 
+        materiasAprobadas.has(materia.id) ? total + materia.cargaHoraria : total, 0
+      ),
+      version: "1.0"
+    };
+
+    try {
+      // En un entorno real, esto requeriría una API o backend
+      // Para el desarrollo local, mostraremos el JSON para copiarlo manualmente
+      console.log('Datos para guardar en progreso-academico.json:', JSON.stringify(datos, null, 2));
+      
+      setGuardadoAutomatico(true);
+      setTimeout(() => setGuardadoAutomatico(false), 2000);
+      
+      return datos;
+    } catch (error) {
+      console.error('Error al guardar progreso:', error);
+    }
+  };
+
+  // Función para descargar el progreso como archivo JSON
+  const descargarProgreso = () => {
+    const datos = {
+      materiasAprobadas: Array.from(materiasAprobadas),
+      fechaUltimaActualizacion: new Date().toISOString(),
+      progreso: progreso,
+      totalMaterias: materias.length,
+      cargaHoraria: totalCargaHoraria,
+      version: "1.0"
+    };
+
+    const dataStr = JSON.stringify(datos, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = nombreArchivo || 'progreso-academico.json';
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+    
+    setGuardadoAutomatico(true);
+    setTimeout(() => setGuardadoAutomatico(false), 2000);
+  };
+
+  // Función para cargar progreso desde archivo JSON subido manualmente
+  const cargarProgresoManual = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const datos = JSON.parse(e.target.result);
+          if (datos.materiasAprobadas && Array.isArray(datos.materiasAprobadas)) {
+            setMateriasAprobadas(new Set(datos.materiasAprobadas));
+            setGuardadoAutomatico(true);
+            setTimeout(() => setGuardadoAutomatico(false), 2000);
+          }
+        } catch (error) {
+          alert('Error al cargar el archivo: Formato JSON inválido');
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  // Función para mostrar datos para guardar manualmente
+  const mostrarDatosParaGuardar = () => {
+    const datos = {
+      materiasAprobadas: Array.from(materiasAprobadas),
+      fechaUltimaActualizacion: new Date().toISOString(),
+      progreso: progreso,
+      totalMaterias: materias.length,
+      cargaHoraria: totalCargaHoraria,
+      version: "1.0"
+    };
+
+    const dataStr = JSON.stringify(datos, null, 2);
+    
+    // Crear un modal o ventana con el JSON
+    const ventana = window.open('', '_blank', 'width=600,height=400');
+    ventana.document.write(`
+      <html>
+        <head>
+          <title>Progreso Académico - JSON</title>
+          <style>
+            body { font-family: monospace; padding: 20px; }
+            textarea { width: 100%; height: 300px; font-family: monospace; }
+            button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+          </style>
+        </head>
+        <body>
+          <h2>Copia este contenido en tu archivo progreso-academico.json</h2>
+          <textarea readonly>${dataStr}</textarea>
+          <br>
+          <button onclick="navigator.clipboard.writeText(document.querySelector('textarea').value)">
+            Copiar al portapapeles
+          </button>
+          <button onclick="window.close()">Cerrar</button>
+        </body>
+      </html>
+    `);
+    
+    setGuardadoAutomatico(true);
+    setTimeout(() => setGuardadoAutomatico(false), 2000);
+  };
+
+  // Cargar progreso al inicializar la aplicación
+  useEffect(() => {
+    cargarProgresoDesdeArchivo();
+  }, []);
+
+  // Guardar automáticamente cuando cambie el progreso
+  useEffect(() => {
+    if (estadoCarga === 'exito' && materiasAprobadas.size >= 0) {
+      guardarProgresoEnArchivo(materiasAprobadas);
+    }
+  }, [materiasAprobadas, estadoCarga]);
+
+  const puedeTomarMateria = (materia) => {
+    if (materia.correlativas.includes("CBC")) {
+      return true;
+    }
+    
+    return materia.correlativas.every(correlativa => {
+      if (correlativa.includes(" o ")) {
+        const opciones = correlativa.split(" o ");
+        return opciones.some(opcion => {
+          const materiaCorrelativa = materias.find(m => m.nombre === opcion.trim());
+          return materiaCorrelativa && materiasAprobadas.has(materiaCorrelativa.id);
+        });
+      }
+      
+      const materiaCorrelativa = materias.find(m => m.nombre === correlativa);
+      return materiaCorrelativa && materiasAprobadas.has(materiaCorrelativa.id);
+    });
+  };
+
+  const toggleMateria = (id) => {
+    const nuevasAprobadas = new Set(materiasAprobadas);
+    if (nuevasAprobadas.has(id)) {
+      nuevasAprobadas.delete(id);
+    } else {
+      nuevasAprobadas.add(id);
+    }
+    setMateriasAprobadas(nuevasAprobadas);
+  };
+
+  useEffect(() => {
+    const porcentaje = (materiasAprobadas.size / materias.length) * 100;
+    setProgreso(porcentaje);
+  }, [materiasAprobadas]);
+
+  const getStatusStyle = (materia) => {
+    if (materiasAprobadas.has(materia.id)) {
+      return {
+        container: "bg-gradient-to-br from-green-50 via-green-100 to-emerald-50 border-2 border-green-300 shadow-xl transform hover:scale-105 hover:shadow-2xl",
+        header: "bg-gradient-to-r from-green-500 to-emerald-600 text-white",
+        glow: "shadow-green-200",
+        checkmark: "absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1 shadow-lg"
+      };
+    } else if (puedeTomarMateria(materia)) {
+      return {
+        container: "bg-gradient-to-br from-white via-blue-50 to-indigo-50 border-2 border-blue-200 shadow-xl transform hover:scale-105 hover:shadow-2xl",
+        header: `bg-gradient-to-r ${materia.color} text-white`,
+        glow: "shadow-blue-200",
+        pulse: "animate-pulse"
+      };
+    } else {
+      return {
+        container: "bg-gradient-to-br from-gray-50 via-gray-100 to-slate-50 border-2 border-gray-200 shadow-lg opacity-60",
+        header: "bg-gradient-to-r from-gray-400 to-gray-500 text-white",
+        glow: "shadow-gray-200"
+      };
+    }
+  };
+
+  const materiasPorNivel = {
+    "primer-año": materias.filter(m => m.nivel === "primer-año"),
+    "segundo-año": materias.filter(m => m.nivel === "segundo-año"),
+    "tercer-año": materias.filter(m => m.nivel === "tercer-año"),
+    "cuarto-año": materias.filter(m => m.nivel === "cuarto-año")
+  };
+
+  const totalCargaHoraria = materias.reduce((total, materia) => 
+    materiasAprobadas.has(materia.id) ? total + materia.cargaHoraria : total, 0
+  );
+
+  return (
+    <div className="max-w-7xl mx-auto p-6 bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50 min-h-screen">
+      <div className="mb-8">
+        <h1 className="text-5xl font-bold text-gray-900 mb-3 flex items-center">
+          <GraduationCap className="w-12 h-12 mr-4 text-blue-600" />
+          Calculadora de Progreso Académico
+          <Sparkles className="w-10 h-10 ml-4 text-yellow-500 animate-pulse" />
+        </h1>
+        <p className="text-gray-600 text-xl font-medium">Carrera de Biología</p>
+        
+        {/* Indicador de estado de carga */}
+        {estadoCarga === 'cargando' && (
+          <div className="mt-3 flex items-center text-blue-600 text-sm bg-blue-50 px-3 py-2 rounded-full w-fit">
+            <Clock className="w-4 h-4 mr-2 animate-spin" />
+            Cargando progreso...
+          </div>
+        )}
+        
+        {estadoCarga === 'error' && (
+          <div className="mt-3 flex items-center text-orange-600 text-sm bg-orange-50 px-3 py-2 rounded-full w-fit">
+            <AlertCircle className="w-4 h-4 mr-2" />
+            No se encontró archivo de progreso, iniciando desde cero
+          </div>
+        )}
+        
+        {/* Controles de archivo */}
+        <div className="mt-6 flex flex-wrap gap-4">
+          <button
+            onClick={descargarProgreso}
+            className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            <Download className="w-5 h-5 mr-2" />
+            Descargar Progreso
+          </button>
+          
+          <button
+            onClick={mostrarDatosParaGuardar}
+            className="flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            <Save className="w-5 h-5 mr-2" />
+            Ver JSON para Guardar
+          </button>
+          
+          <label className="flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
+            <Upload className="w-5 h-5 mr-2" />
+            Cargar Progreso Manual
+            <input
+              type="file"
+              accept=".json"
+              onChange={cargarProgresoManual}
+              className="hidden"
+            />
+          </label>
+          
+          <input
+            type="text"
+            value={nombreArchivo}
+            onChange={(e) => setNombreArchivo(e.target.value)}
+            placeholder="Nombre del archivo..."
+            className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+        
+        {/* Indicador de guardado automático */}
+        {guardadoAutomatico && (
+          <div className="mt-3 flex items-center text-green-600 text-sm bg-green-50 px-3 py-2 rounded-full w-fit">
+            <Save className="w-4 h-4 mr-2" />
+            Progreso guardado/cargado ✨
+          </div>
+        )}
+      </div>
+
+      {/* Panel de Estadísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-100 text-sm font-medium">Progreso General</p>
+              <p className="text-4xl font-bold">{progreso.toFixed(1)}%</p>
+            </div>
+            <div className="bg-white bg-opacity-20 rounded-full p-3">
+              <Award className="w-8 h-8 text-blue-100" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-100 text-sm font-medium">Materias Aprobadas</p>
+              <p className="text-4xl font-bold">{materiasAprobadas.size}/{materias.length}</p>
+            </div>
+            <div className="bg-white bg-opacity-20 rounded-full p-3">
+              <CheckCircle className="w-8 h-8 text-green-100" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-purple-100 text-sm font-medium">Carga Horaria</p>
+              <p className="text-4xl font-bold">{totalCargaHoraria}hs</p>
+            </div>
+            <div className="bg-white bg-opacity-20 rounded-full p-3">
+              <Clock className="w-8 h-8 text-purple-100" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-orange-100 text-sm font-medium">Disponibles</p>
+              <p className="text-4xl font-bold">
+                {materias.filter(m => !materiasAprobadas.has(m.id) && puedeTomarMateria(m)).length}
+              </p>
+            </div>
+            <div className="bg-white bg-opacity-20 rounded-full p-3">
+              <Calendar className="w-8 h-8 text-orange-100" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Barra de Progreso */}
+      <div className="mb-10">
+        <div className="flex justify-between items-center mb-4">
+          <span className="text-xl font-bold text-gray-700">Progreso de la Carrera</span>
+          <span className="text-xl font-bold text-gray-700">{progreso.toFixed(1)}%</span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-6 shadow-inner">
+          <div 
+            className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 h-6 rounded-full transition-all duration-700 shadow-lg relative overflow-hidden"
+            style={{ width: `${progreso}%` }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Materias por Nivel */}
+      {Object.entries(materiasPorNivel).map(([nivel, materiasList]) => (
+        <div key={nivel} className="mb-12">
+          <h2 className="text-3xl font-bold text-gray-800 mb-8 capitalize flex items-center">
+            <div className="w-4 h-10 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full mr-4 shadow-lg"></div>
+            {nivel.replace("-", " ")}
+            <Star className="w-6 h-6 ml-3 text-yellow-500" />
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {materiasList.map((materia) => {
+              const style = getStatusStyle(materia);
+              return (
+                <div
+                  key={materia.id}
+                  className={`rounded-2xl cursor-pointer transition-all duration-300 relative overflow-hidden ${style.container} ${style.glow}`}
+                  onClick={() => toggleMateria(materia.id)}
+                >
+                  {/* Checkmark para materias aprobadas */}
+                  {materiasAprobadas.has(materia.id) && (
+                    <div className={style.checkmark}>
+                      <CheckCircle className="w-6 h-6" />
+                    </div>
+                  )}
+                  
+                  {/* Header con emoji y gradiente */}
+                  <div className={`${style.header} p-5 rounded-t-2xl relative`}>
+                    <div className="flex items-center justify-between">
+                      <div className="text-4xl">{materia.emoji}</div>
+                      <div className="bg-white bg-opacity-20 px-3 py-1 rounded-full">
+                        <span className="text-white text-sm font-bold">{materia.cargaHoraria}hs</span>
+                      </div>
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-10 animate-pulse"></div>
+                  </div>
+                  
+                  {/* Contenido de la tarjeta */}
+                  <div className="p-6">
+                    <h3 className="font-bold text-gray-800 mb-4 text-lg leading-tight">
+                      {materia.nombre}
+                    </h3>
+                    
+                    <div className="space-y-3 text-sm">
+                      <div className="flex items-start bg-gray-50 p-3 rounded-lg">
+                        <span className="text-lg mr-3">📚</span>
+                        <div>
+                          <span className="font-semibold text-gray-700">Correlativas:</span>
+                          <p className="text-gray-600 mt-1">{materia.correlativas.join(", ")}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start bg-gray-50 p-3 rounded-lg">
+                        <span className="text-lg mr-3">📅</span>
+                        <div>
+                          <span className="font-semibold text-gray-700">Cuatrimestres:</span>
+                          <p className="text-gray-600 mt-1">{materia.cuatrimestres.join(", ")}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Estado de la materia */}
+                    <div className="mt-4 text-center">
+                      {materiasAprobadas.has(materia.id) ? (
+                        <div className="text-green-600 font-semibold flex items-center justify-center">
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          Aprobada ✨
+                        </div>
+                      ) : puedeTomarMateria(materia) ? (
+                        <div className="text-blue-600 font-semibold flex items-center justify-center">
+                          <Circle className="w-4 h-4 mr-2" />
+                          Disponible para cursar
+                        </div>
+                      ) : (
+                        <div className="text-gray-500 font-medium flex items-center justify-center">
+                          <Circle className="w-4 h-4 mr-2" />
+                          Requiere correlativas
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+
+      {/* Leyenda mejorada */}
+      <div className="mt-12 p-6 bg-white rounded-2xl shadow-xl">
+        <h3 className="font-bold text-gray-800 mb-4 text-lg flex items-center">
+          <span className="text-2xl mr-2">📋</span>
+          Leyenda de Estados
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div className="flex items-center p-3 bg-green-50 rounded-lg">
+            <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
+            <span className="font-medium text-green-800">Materia Aprobada</span>
+          </div>
+          <div className="flex items-center p-3 bg-blue-50 rounded-lg">
+            <Circle className="w-5 h-5 text-blue-600 mr-3" />
+            <span className="font-medium text-blue-800">Disponible para Cursar</span>
+          </div>
+          <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+            <Circle className="w-5 h-5 text-gray-400 mr-3" />
+            <span className="font-medium text-gray-600">Requiere Correlativas</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Instrucciones de uso */}
+      <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-lg">
+        <h3 className="font-bold text-gray-800 mb-4 text-lg flex items-center">
+          <span className="text-2xl mr-2">💡</span>
+          Instrucciones de Uso
+        </h3>
+        <div className="text-sm text-gray-700 space-y-2">
+          <p>• <strong>Carga automática:</strong> La aplicación intenta cargar automáticamente desde "progreso-academico.json"</p>
+          <p>• <strong>Guardado automático:</strong> Los cambios se registran automáticamente en la consola del navegador</p>
+          <p>• <strong>Ver JSON:</strong> Haz clic en "Ver JSON para Guardar" para obtener el código JSON actualizado</p>
+          <p>• <strong>Guardar manualmente:</strong> Copia el JSON mostrado y guárdalo en un archivo "progreso-academico.json" en la carpeta del proyecto</p>
+          <p>• <strong>Descargar:</strong> Usa "Descargar Progreso" para obtener una copia de respaldo</p>
+          <p>• <strong>Cargar manual:</strong> Usa "Cargar Progreso Manual" para restaurar desde un archivo de respaldo</p>
+        </div>
+      </div>
+    </div>
+  );
+
+        };
+
+        // Renderizar la aplicación
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<CalculadoraProgreso />);
+    </script>
+</body>
+</html>
